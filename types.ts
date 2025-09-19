@@ -11,6 +11,7 @@ export interface Message {
   sender: Sender;
   text?: string;
   practiceProblem?: PracticeProblemData;
+  isKeyPoint?: boolean;
 }
 
 export interface PracticeProblemData {

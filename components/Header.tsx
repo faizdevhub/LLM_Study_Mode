@@ -1,5 +1,5 @@
 import React from 'react';
-import { LogoIcon, PlusCircleIcon, TrashIcon, HistoryIcon, SunIcon, MoonIcon, GiftIcon } from './icons';
+import { LogoIcon, PlusCircleIcon, TrashIcon, HistoryIcon, SunIcon, MoonIcon, GiftIcon, BookmarkIcon } from './icons';
 
 interface HeaderProps {
   currentTopic: string;
@@ -11,9 +11,11 @@ interface HeaderProps {
   onViewBonusTip: () => void;
   theme: 'light' | 'dark';
   onThemeToggle: () => void;
+  onViewKeyPoints: () => void;
+  keyPointsCount: number;
 }
 
-export const Header: React.FC<HeaderProps> = ({ currentTopic, onNewTopic, studyStarted, historyLength, onClearHistory, onViewHistory, onViewBonusTip, theme, onThemeToggle }) => {
+export const Header: React.FC<HeaderProps> = ({ currentTopic, onNewTopic, studyStarted, historyLength, onClearHistory, onViewHistory, onViewBonusTip, theme, onThemeToggle, onViewKeyPoints, keyPointsCount }) => {
   return (
     <header className="flex-shrink-0 bg-white dark:bg-gray-800 shadow-md border-b border-gray-200 dark:border-gray-700">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -53,13 +55,29 @@ export const Header: React.FC<HeaderProps> = ({ currentTopic, onNewTopic, studyS
                 {theme === 'light' ? <MoonIcon className="w-5 h-5" /> : <SunIcon className="w-5 h-5" />}
             </button>
             {studyStarted && (
-              <button
-                onClick={onNewTopic}
-                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/50 rounded-full hover:bg-blue-200 dark:hover:bg-blue-900 transition-colors"
-              >
-                <PlusCircleIcon className="w-5 h-5" />
-                <span className="hidden sm:inline">New Topic</span>
-              </button>
+              <>
+                <button
+                    onClick={onViewKeyPoints}
+                    className="relative flex items-center gap-2 px-3 py-2 text-sm font-medium text-yellow-600 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-900/50 rounded-full hover:bg-yellow-200 dark:hover:bg-yellow-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={keyPointsCount === 0}
+                    title="View Key Points"
+                >
+                    <BookmarkIcon className="w-5 h-5"/>
+                    <span className="hidden sm:inline">Key Points</span>
+                    {keyPointsCount > 0 && (
+                        <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-blue-600 dark:bg-gray-800 border-2 border-white dark:border-yellow-900/50 rounded-full">
+                            {keyPointsCount}
+                        </span>
+                    )}
+                </button>
+                <button
+                  onClick={onNewTopic}
+                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/50 rounded-full hover:bg-blue-200 dark:hover:bg-blue-900 transition-colors"
+                >
+                  <PlusCircleIcon className="w-5 h-5" />
+                  <span className="hidden sm:inline">New Topic</span>
+                </button>
+              </>
             )}
             {historyLength > 0 && (
                  <>

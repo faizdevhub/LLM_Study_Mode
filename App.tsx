@@ -13,6 +13,7 @@ import { LanguageModal } from './components/LanguageModal';
 import { HistoryModal } from './components/HistoryModal';
 import { TutorialModal } from './components/TutorialModal';
 import { BonusTipModal } from './components/BonusTipModal';
+import { KeyPointsModal } from './components/KeyPointsModal';
 
 type Theme = 'light' | 'dark';
 
@@ -28,6 +29,7 @@ const App: React.FC = () => {
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState<boolean>(false);
   const [isTutorialOpen, setIsTutorialOpen] = useState<boolean>(false);
   const [isBonusTipModalOpen, setIsBonusTipModalOpen] = useState<boolean>(false);
+  const [isKeyPointsModalOpen, setIsKeyPointsModalOpen] = useState<boolean>(false);
   const [dailyTip, setDailyTip] = useState<string>('');
   const [theme, setTheme] = useState<Theme>(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -322,6 +324,16 @@ const App: React.FC = () => {
     setIsBonusTipModalOpen(true);
   };
 
+  const handleToggleKeyPoint = (messageId: number) => {
+    setChatHistory(prevChatHistory =>
+        prevChatHistory.map(msg =>
+            msg.id === messageId ? { ...msg, isKeyPoint: !msg.isKeyPoint } : msg
+        )
+    );
+  };
+
+  const keyPointsCount = chatHistory.filter(msg => msg.isKeyPoint).length;
+
   return (
     <div className="flex flex-col h-screen font-sans text-gray-800 dark:text-gray-200">
       <Header 
@@ -334,6 +346,8 @@ const App: React.FC = () => {
         onViewBonusTip={handleViewBonusTip}
         theme={theme}
         onThemeToggle={handleThemeToggle}
+        onViewKeyPoints={() => setIsKeyPointsModalOpen(true)}
+        keyPointsCount={keyPointsCount}
       />
       <main className="flex-1 flex flex-col items-center justify-center p-4 overflow-y-auto">
         {!studyStarted ? (
@@ -342,7 +356,11 @@ const App: React.FC = () => {
           <div className="w-full max-w-4xl h-full flex flex-col bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-700">
             <div ref={chatContainerRef} className="flex-1 p-6 space-y-6 overflow-y-auto custom-scrollbar">
               {chatHistory.map((msg) => (
-                <ChatBubble key={msg.id} message={msg} />
+                <ChatBubble 
+                  key={msg.id} 
+                  message={msg}
+                  onToggleKeyPoint={handleToggleKeyPoint}
+                />
               ))}
               {isLoading && <LoadingBubble />}
             </div>
@@ -372,6 +390,14 @@ const App: React.FC = () => {
         <TutorialModal
           isOpen={isTutorialOpen}
           onClose={handleCloseTutorial}
+        />
+      )}
+      {isKeyPointsModalOpen && (
+        <KeyPointsModal
+          isOpen={isKeyPointsModalOpen}
+          onClose={() => setIsKeyPointsModalOpen(false)}
+          chatHistory={chatHistory}
+          onToggleKeyPoint={handleToggleKeyPoint}
         />
       )}
       {isBonusTipModalOpen && (
